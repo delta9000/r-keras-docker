@@ -32,7 +32,8 @@ RUN apt-get -yq install \
     git \
     build-essential \
     r-base \
-    r-base-dev
+    r-base-dev \
+    uuid-runtime
 
 
 
@@ -49,5 +50,7 @@ USER root
 RUN wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2023.03.0-386-amd64.deb && apt-get install -y ./rstudio-server-2023.03.0-386-amd64.deb && rm rstudio-server-2023.03.0-386-amd64.deb
 
 COPY startup.sh /usr/local/bin/startup.sh
+
+RUN uuidgen -x | tr -d '-' > /etc/rstudio/secure-cookie-key && rm -f /etc/init.d/rstudio-server
 
 CMD ["/bin/bash", "/usr/local/bin/startup.sh"]
