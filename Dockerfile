@@ -31,13 +31,11 @@ RUN apt-get -yq install \
     wget \
     git \
     build-essential \
-    r-base \
-    r-base-dev \
     uuid-runtime
 
+RUN apt-get install -y --no-install-recommends software-properties-common dirmngr && sh -c 'wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc' && add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" && apt-get install -y --no-install-recommends r-base  r-base-dev
 
-
-RUN useradd -m rstudio && chgrp rstudio /usr/local/lib/R/site-library
+RUN useradd -m rstudio && chgrp rstudio /usr/local/lib/R/site-library && chmod g+w -R /usr/local/lib/R/site-library
 
 USER rstudio
 
