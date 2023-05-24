@@ -11,7 +11,12 @@ ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 
-RUN apt-get -yq install \
+RUN apt-get install -y --no-install-recommends software-properties-common dirmngr wget && \
+    sh -c 'wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc' && \
+    add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" && \
+    apt-get install -y --no-install-recommends \
+    r-base \
+    r-base-dev \
     gdb \
     lcov \
     libbz2-dev \
@@ -28,20 +33,27 @@ RUN apt-get -yq install \
     uuid-dev \
     xvfb \
     zlib1g-dev \
-    wget \
     git \
     build-essential \
-    uuid-runtime
+    uuid-runtime \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    libcurl4-openssl-dev \
+    libxml2-dev
 
-RUN apt-get install -y --no-install-recommends software-properties-common dirmngr && sh -c 'wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc' && add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" && apt-get install -y --no-install-recommends r-base  r-base-dev
-
-RUN useradd -m rstudio && chgrp rstudio /usr/local/lib/R/site-library && chmod g+w -R /usr/local/lib/R/site-library
+RUN useradd -m rstudio && \
+    chgrp rstudio /usr/local/lib/R/site-library && \
+    chmod g+w -R /usr/local/lib/R/site-library
 
 USER rstudio
 
 WORKDIR /home/rstudio
 
-RUN R -e 'install.packages(c("tensorflow", "reticulate", "keras"));library(reticulate);path_to_python <- install_python();virtualenv_create("r-reticulate", python = path_to_python);install.packages("keras");library(keras);install_keras(envname = "r-reticulate")'
+RUN R -e 'install.packages(c("tensorflow", "reticulate","tfdatasets"),Ncpus = 12);library(reticulate);path_to_python <- install_python();virtualenv_create("r-reticulate", python = path_to_python);install.packages("keras");library(keras);install_keras(envname = "r-reticulate");install.packages("tidyverse",Ncpus = 12)'
 
 USER root
 
@@ -50,5 +62,6 @@ RUN wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2023.0
 COPY startup.sh /usr/local/bin/startup.sh
 
 RUN uuidgen -x | tr -d '-' > /etc/rstudio/secure-cookie-key && rm -f /etc/init.d/rstudio-server
+
 
 CMD ["/bin/bash", "/usr/local/bin/startup.sh"]

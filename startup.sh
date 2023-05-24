@@ -4,7 +4,7 @@ password="$(openssl rand -base64 15)";
 
 echo "rstudio:$password" | chpasswd
 echo "The password for the rstudio user is: $password"
-echo "Login to the webui @ https://localhost:8787"
+echo "Login to the webui @ http://localhost:8787"
 
 uuidgen -x | tr -d '-' > /etc/rstudio/secure-cookie-key
 
