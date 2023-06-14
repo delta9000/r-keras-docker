@@ -1,6 +1,16 @@
 #!/bin/bash
 
-password="$(openssl rand -base64 15)";
+if [ -n "$1" ]; then
+  password="$1"
+else
+  password="$(openssl rand -base64 15)"
+fi
+
+if [ ${#password} -lt 8 ] || ! [[ $password =~ [[:upper:]] ]] || ! [[ $password =~ [[:lower:]] ]] || ! [[ $password =~ [[:digit:]] ]]; then
+  echo "Error: Password does not meet complexity requirements."
+  echo "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit."
+  exit 1
+fi
 
 echo "rstudio:$password" | chpasswd
 echo "The password for the rstudio user is: $password"
