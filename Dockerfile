@@ -64,4 +64,4 @@ COPY startup.sh /usr/local/bin/startup.sh
 RUN uuidgen -x | tr -d '-' > /etc/rstudio/secure-cookie-key && rm -f /etc/init.d/rstudio-server
 
 
-CMD ["/bin/bash", "/usr/local/bin/startup.sh"]
+ENTRYPOINT ["/usr/local/bin/startup.sh"]
