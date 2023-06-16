@@ -61,7 +61,8 @@ RUN wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2023.0
 
 COPY startup.sh /usr/local/bin/startup.sh
 
-RUN uuidgen -x | tr -d '-' > /etc/rstudio/secure-cookie-key && rm -f /etc/init.d/rstudio-server
+RUN uuidgen -x | tr -d '-' > /etc/rstudio/secure-cookie-key && rm -f /etc/init.d/rstudio-server && chmod +x /usr/local/bin/startup.sh
 
+RUN wget https://github.com/caddyserver/caddy/releases/download/v2.6.1/caddy_2.6.1_linux_amd64.deb && apt install -y ./caddy_2.6.1_linux_amd64.deb && rm caddy_2.6.1_linux_amd64.deb
 
 ENTRYPOINT ["/usr/local/bin/startup.sh"]
